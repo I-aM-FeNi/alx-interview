@@ -44,4 +44,4 @@ Repository
 GitHub repository: alx-interview
 Directory: 0x00-pascal_triangle
 
-
+BY: KATNIP FOR ALX
