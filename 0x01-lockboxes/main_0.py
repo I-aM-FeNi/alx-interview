@@ -19,3 +19,4 @@ print(canUnlockAll(boxes))  # Expected output: True
 # Test case 3: Not all boxes can be unlocked
 boxes = [[1, 4], [2], [0, 4, 1], [3], [], [4, 1], [5, 6]]
 print(canUnlockAll(boxes))  # Expected output: False
+
