@@ -1,58 +1,21 @@
 #!/usr/bin/python3
+'''A module for working with lockboxes.
+'''
+
+
 def canUnlockAll(boxes):
-    """
-    Determines if all boxes can be opened.
-
-    Args:
-        boxes (list of lists): List of boxes with keys.
-
-    Returns:
-        bool: True if all boxes can be opened, False otherwise.
-    """
-    if not boxes:
-        return False
-
-    opened = set()
-    stack = [0]
-
-    while stack:
-        box = stack.pop()
-        if box not in opened:
-            opened.add(box)
-            for key in boxes[box]:
-                if key < len(boxes) and key not in opened:
-                    stack.append(key)
-
-    return len(opened) == len(boxes)
-
-
-# Example usage
-if __name__ == "__main__":
-    boxes = [[1], [2], [3], [4], []]
-    print(canUnlockAll(boxes))  # True
-
-    boxes = [[1, 4, 6], [2], [0, 4, 1], [5, 6, 2], [3], [4, 1], [6]]
-    print(canUnlockAll(boxes))  # True
-
-    boxes = [[1, 4], [2], [0, 4, 1], [3], [], [4, 1], [5, 6]]
-    print(canUnlockAll(boxes))  # False
-
-    boxes = [[4, 6], [2], [0, 4, 1], [3], [], [4, 1], [5, 6]]
-    print(canUnlockAll(boxes))  # False
-
-    boxes = [[0]]
-    print(canUnlockAll(boxes))  # True
-
-    boxes = [
-        [10, 3, 8, 9, 6, 5, 8, 1], [8, 5, 3, 7, 1, 8, 6], [5, 1, 9, 1], [],
-        [6, 6, 9, 4, 3, 2, 3, 8, 5], [9, 4], [4, 2, 5, 1, 1, 6, 4, 5, 6],
-        [9, 5, 8, 8], [6, 2, 8, 6]
-    ]
-    print(canUnlockAll(boxes))  # True
-
-    boxes = [
-        [7, 5], [1, 10, 7], [9, 6, 10], [7, 9], [2], [7, 3],
-        [7, 9, 10, 10, 8, 9, 2, 5], [7, 2, 2, 4, 4, 2, 4, 8, 7],
-        [4, 2, 9, 6, 6, 5, 5]
-    ]
-    print(canUnlockAll(boxes))  # False
+    '''Checks if all the boxes in a list of boxes containing the keys
+    (indices) to other boxes can be unlocked given that the first
+    box is unlocked.
+    '''
+    n = len(boxes)
+    seen_boxes = set([0])
+    unseen_boxes = set(boxes[0]).difference(set([0]))
+    while len(unseen_boxes) > 0:
+        boxIdx = unseen_boxes.pop()
+        if not boxIdx or boxIdx >= n or boxIdx < 0:
+            continue
+        if boxIdx not in seen_boxes:
+            unseen_boxes = unseen_boxes.union(boxes[boxIdx])
+            seen_boxes.add(boxIdx)
+    return n == len(seen_boxes)
