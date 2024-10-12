@@ -1,6 +1,5 @@
 ### `README.md`
 
-```markdown
 # Lockboxes Project
 
 This project contains a Python function that determines if all boxes in a list can be opened. Each box may contain keys to other boxes, and the goal is to check if all boxes can be unlocked starting from the first box.
