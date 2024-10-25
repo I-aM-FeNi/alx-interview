@@ -27,146 +27,49 @@ Usage:
     $ python3 script.py  # Then type/paste log entries manually
 """
 
+
 import sys
-import signal
-import re
-from collections import defaultdict
-from typing import Match, Optional, Dict, Set
 
+# store the count of all status codes in a dictionary
+status_codes_dict = {'200': 0, '301': 0, '400': 0, '401': 0, '403': 0,
+                     '404': 0, '405': 0, '500': 0}
 
-class LogProcessor:
-    """
-    Processes log entries and computes metrics including total file size
-    and status code frequencies.
+total_size = 0
+count = 0  # keep count of the number lines counted
 
-    Attributes:
-        l_format (str): Regular expression pattern for valid log entries
-        pattern (re.Pattern): Compiled regular expression for log validation
-        total_size (int): Running sum of all file sizes
-        status_codes (defaultdict): Counter for each status code
-        line_count (int): Total number of valid lines processed
-        valid_codes (set): Set of valid HTTP status codes to track
-        should_exit (bool): Flag for graceful shutdown
-    """
+try:
+    for line in sys.stdin:
+        line_list = line.split(" ")
 
-    def __init__(self) -> None:
-        """
-        Initialize the LogProcessor with default values
-        and set up signal handling.
-        """
-        # Regular expression for log line validation and parsing
-        self.l_format: str = (
-            r'([\d\.]+)\s+-\s+'
-            r'\[(.*?)\]\s+'
-            r'"GET /projects/260 '
-            r'HTTP/1\.1"\s+'
-            r'(\d+)\s+'
-            r'(\d+)'
-            )
-        self.pattern = re.compile(self.l_format)
+        if len(line_list) > 4:
+            status_code = line_list[-2]
+            file_size = int(line_list[-1])
 
-        # Metrics storage
-        self.total_size: int = 0
-        self.status_codes: Dict[int, int] = defaultdict(int)
-        self.line_count: int = 0
+            # check if the status code receive exists in the dictionary and
+            # increment its count
+            if status_code in status_codes_dict.keys():
+                status_codes_dict[status_code] += 1
 
-        # Valid status codes
-        self.valid_codes: Set[int] = {200, 301, 400, 401, 403, 404, 405, 500}
+            # update total size
+            total_size += file_size
 
-        # Flag for graceful shutdown
-        self.should_exit: bool = False
+            # update count of lines
+            count += 1
 
-        # Set up signal handler
-        signal.signal(signal.SIGINT, self.handle_interrupt)
+        if count == 10:
+            count = 0  # reset count
+            print('File size: {}'.format(total_size))
 
-    def handle_interrupt(self, signum: int, frame: Optional[object]) -> None:
-        """
-        Handle keyboard interruption (CTRL+C) by printing final statistics
-        and performing graceful shutdown.
+            # print out status code counts
+            for key, value in sorted(status_codes_dict.items()):
+                if value != 0:
+                    print('{}: {}'.format(key, value))
 
-        Args:
-            signum: Signal number
-            frame: Current stack frame (not used)
-        """
-        self.should_exit = True
-        self.print_stats()
-        sys.exit(0)
+except Exception as err:
+    pass
 
-    def process_line(self, line: str) -> None:
-        """
-        Process a single log line, updating metrics if the line is valid.
-
-        The line is considered valid if it:
-        1. Matches the expected log format
-        2. Contains a valid integer status code
-        3. Contains a valid integer file size
-
-        Args:
-            line: A single log entry to process
-        """
-        match: Optional[Match] = self.pattern.match(line.strip())
-        if match:
-            try:
-                # Extract status code and file size
-                status_code: int = int(match.group(3))
-                file_size: int = int(match.group(4))
-
-                # Update metrics
-                if status_code in self.valid_codes:
-                    self.status_codes[status_code] += 1
-                self.total_size += file_size
-                self.line_count += 1
-
-                # Print stats every 10 lines
-                if self.line_count % 10 == 0:
-                    self.print_stats()
-
-            except ValueError:
-                # Skip line if status code or file size is not a valid integer
-                pass
-
-    def print_stats(self) -> None:
-        """
-        Print current statistics including total
-        file size and status code counts.
-
-        Statistics are printed in the following format:
-        File size: <total_size>
-        <status_code>: <count>
-        ...
-
-        Status codes are printed in ascending order
-        and only if they have occurred
-        at least once.
-        """
-        print(f"\nFile size: {self.total_size}")
-
-        # Print status codes in ascending order
-        for code in sorted(self.status_codes.keys()):
-            if self.status_codes[code] > 0:
-                print(f"{code}: {self.status_codes[code]}")
-
-
-def main() -> None:
-    """
-    Main entry point for the log processor.
-
-    Creates a LogProcessor instance and processes stdin line by line
-    until EOF or keyboard interruption.
-    """
-    processor = LogProcessor()
-
-    try:
-        for line in sys.stdin:
-            processor.process_line(line)
-            if processor.should_exit:
-                break
-    except KeyboardInterrupt:
-        # This shouldn't be needed due to signal handler, but just in case
-        processor.print_stats()
-        sys.exit(0)
-
-
-if __name__ == "__main__":
-    main()
-
+finally:
+    print('File size: {}'.format(total_size))
+    for key, value in sorted(status_codes_dict.items()):
+        if value != 0:
+            print('{}: {}'.format(key, value))
