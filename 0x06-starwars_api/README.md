@@ -9,3 +9,5 @@ This project contains interview coding challenges.
   + Display one character name per line **in the same order as the “characters” list in the `/films/` endpoint**.
   + You must use the [Star wars API](https://swapi-api.hbtn.io/).
   + You must use the `request` module.
+
+By Malcolm Iheremelam
