@@ -29,4 +29,4 @@ This project contains interview coding challenges.
   + You are only allowed to import the `sys` module.
 
 
-Malcolm Iheremelam
+Mamello Motaung.
