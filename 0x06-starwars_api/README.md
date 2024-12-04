@@ -10,4 +10,4 @@ This project contains interview coding challenges.
   + You must use the [Star wars API](https://swapi-api.hbtn.io/).
   + You must use the `request` module.
 
-By Malcolm Iheremelam
+By: Mamello Motaung.
