@@ -2,6 +2,8 @@
 
 This project contains interview coding challenges.
 
+By Malcolm Iheremelam
+
 ## Tasks To Complete
 
 + [x] 0. **Prime Game**<br/>[0-prime_game.py](0-prime_game.py) contains the solution to the following challenge:
