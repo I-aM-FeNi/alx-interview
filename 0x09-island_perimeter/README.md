@@ -2,7 +2,7 @@
 
 This project contains interview coding challenges.
 
-Updated by Malcolm Iheremelam
+Updated by Mamello Motaung.
 
 ## Tasks To Complete
 
